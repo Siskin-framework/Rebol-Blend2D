@@ -5,10 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h> // used also for snprintf by the info command!
 #include "blend2d.h"
-#include "reb-host.h"
-#include "host-lib.h"
-#include <stdio.h>
+#include "rebol-extension.h"
 
 //#define USE_TRACES
 #ifdef  USE_TRACES

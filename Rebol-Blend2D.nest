@@ -69,10 +69,6 @@ r3-extension: [
 		%blend2d-command-info.c
 		;%blend2d-command-draw-test.c
 	]
-	include: [
-		%src/
-		%rebol/src/include/
-	]
 	defines: [ENDIAN_LITTLE]
 	cflags:  [-fpermissive]
 	flags:   [-O2 shared]
