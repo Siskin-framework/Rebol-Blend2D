@@ -6,7 +6,7 @@ github: @blend2d
 compiler: gcc
 needs:    cmake
 
-#if Windows? [ define: _CRT_SECURE_NO_WARNINGS upx: on needs: msbuild]
+#if Windows? [ define: TO_WINDOWS define: _CRT_SECURE_NO_WARNINGS upx: on needs: msbuild]
 #if macOS?   [ define: TO_OSX     define: HAS_BOOL]
 #if Linux?   [ define: TO_LINUX ]
 
