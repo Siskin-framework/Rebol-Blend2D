@@ -1,3 +1,5 @@
+[![Rebol-Blend2D CI](https://github.com/Siskin-framework/Rebol-Blend2D/actions/workflows/main.yml/badge.svg)](https://github.com/Siskin-framework/Rebol-Blend2D/actions/workflows/main.yml)
+
 # Rebol/Blend2D
 
 [Blend2D](https://github.com/blend2d/blend2d) extension for [Rebol3](https://github.com/Siskin-framework/Rebol) (drawing dialect)
@@ -7,7 +9,7 @@
 This extension requires Oldes' version of *Rebol* language interpreter, which can be downloaded [here](https://github.com/Siskin-framework/Rebol/releases).
 To use Bland2D's `draw` dialect, the extension must be loaded using:
 ```rebol
-import %blend2d-x64.rebx
+import 'blend2d
 ```
 Once the module is imported, the new `draw` function may be used to draw into any image.
 ```rebol
