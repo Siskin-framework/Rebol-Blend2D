@@ -29,7 +29,7 @@ jobs:
       run: ./siskin Rebol-Blend2D.nest --debug --msvc blend2d-windows-x64
 
     - name: Prepare 64bit Rebol Blend2d extension
-      run:  COPY .\msvc\Release-x64\blend2d-windows-x64.dll blend2d-windows-x64.rebx
+      run:  COPY .\msvc\Release-x64\blend2d-windows-x64.dll .\test\blend2d-windows-x64.rebx
 
     - name: Install Rebol for extension test
       uses: oldes/install-rebol@v3.10.2
@@ -44,7 +44,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
-        path: ./blend2d-windows-x64.rebx
+        path: ./test/blend2d-windows-x64.rebx
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-windows-x64
@@ -67,7 +67,7 @@ jobs:
       run: ./siskin Rebol-Blend2D.nest blend2d-macos-x64
 
     - name: Prepare 64bit Rebol Blend2d extension
-      run:  mv ./build/blend2d-macos-x64.dylib blend2d-macos-x64.rebx
+      run:  mv ./build/blend2d-macos-x64.dylib ./test/blend2d-macos-x64.rebx
 
     - name: Install Rebol for extension test
       uses: oldes/install-rebol@v3.10.2
@@ -78,21 +78,21 @@ jobs:
       run:  ./rebol3 test/test.r3
 
     - name: Compress 64bit Rebol Blend2d extension
-      run:  gzip -9 ./blend2d-macos-x64.rebx
+      run:  gzip -9 ./test/blend2d-macos-x64.rebx
 
     ###############################################################################
     # Collecting build artifacts...
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
-        path: ./blend2d-macos-x64.rebx.gz
+        path: ./test/blend2d-macos-x64.rebx.gz
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-macos-x64
         path: ./test/test-result*
 
   linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -107,7 +107,7 @@ jobs:
       run: ./siskin Rebol-Blend2D.nest blend2d-linux-x64
 
     - name: Prepare 64bit Rebol Blend2d extension
-      run:  mv ./build/blend2d-linux-x64.so blend2d-linux-x64.rebx
+      run:  mv ./build/blend2d-linux-x64.so ./test/blend2d-linux-x64.rebx
 
     - name: Install Rebol for extension test
       uses: oldes/install-rebol@v3.10.2
@@ -118,14 +118,14 @@ jobs:
       run:  ./rebol3 test/test.r3
 
     - name: Compress 64bit Rebol Blend2d extension
-      run:  gzip -9 ./blend2d-linux-x64.rebx
+      run:  gzip -9 ./test/blend2d-linux-x64.rebx
 
     ###############################################################################
     # Collecting build artifacts...
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
-        path: ./blend2d-linux-x64.rebx.gz
+        path: ./test/blend2d-linux-x64.rebx.gz
     - uses: actions/upload-artifact@v2
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-linux-x64
