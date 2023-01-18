@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Siskin Builder
       uses: oldes/install-siskin@v0.7.1
@@ -41,21 +41,21 @@ jobs:
 
     ###############################################################################
     # Collecting build artifacts...
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
         path: ./test/blend2d-windows-x64.rebx
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-windows-x64
         path: ./test/test-result*
 
 
   macos:
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Siskin Builder
       uses: oldes/install-siskin@v0.7.1
@@ -82,11 +82,11 @@ jobs:
 
     ###############################################################################
     # Collecting build artifacts...
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
         path: ./test/blend2d-macos-x64.rebx.gz
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-macos-x64
         path: ./test/test-result*
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Siskin Builder
       uses: oldes/install-siskin@v0.7.1
@@ -122,11 +122,11 @@ jobs:
 
     ###############################################################################
     # Collecting build artifacts...
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}
         path: ./test/blend2d-linux-x64.rebx.gz
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Blend2D-CI-${{github.run_id}}-test-results-linux-x64
         path: ./test/test-result*
