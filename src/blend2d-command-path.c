@@ -117,15 +117,17 @@ REBCNT b2d_init_path_from_block(BLPathCore* path, REBSER* cmds, REBCNT index) {
 				goto process_cmd;
 			}
 		}
+		return 1;
 	} // while end
+	return 0;
 }
 
-REBCNT b2d_path(RXIFRM* frm, void* reb_ctx) {
+int cmd_path(RXIFRM* frm, void* reb_ctx) {
 	debug_print("pathHandleId: %u\n", Handle_BLPath);
 	REBHOB* hob = RL_MAKE_HANDLE_CONTEXT(Handle_BLPath);
 	if (hob == NULL) {
-		trace("Failed to make path handle!");
-		return 1;
+		RXA_SERIES(frm,1) = "Blend2D failed to make a path handle!";
+		return RXR_ERROR;
 	}
 	BLPathCore* path = (BLPathCore*)hob->data;
 	debug_print("New path handle: %u data: %p\n", hob->sym, hob->data);
@@ -138,5 +140,5 @@ REBCNT b2d_path(RXIFRM* frm, void* reb_ctx) {
 	RXA_HANDLE_TYPE(frm, 1) = hob->sym;
 	RXA_HANDLE_FLAGS(frm, 1) = hob->flags;
 	RXA_TYPE(frm, 1) = RXT_HANDLE;
-	return 0;
+	return RXR_VALUE;
 }

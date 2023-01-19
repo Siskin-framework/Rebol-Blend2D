@@ -1,7 +1,13 @@
-;~ Siskin project nest file ~;
+;-    .-.                                                                       
+;-   /'v'\   SISKIN-Builder 3.9.0 project file                                  
+;-  (/uOu\)  https://github.com/Siskin-framework/Builder/                       
+;-===="="=======================================================================
+
 github: @asmjit
 github: @blend2d
 ;github: blend2d/blend2d-samples
+
+version: 0.0.18 ;; clang allows only x.y.z version naming!
 
 compiler: gcc
 needs:    cmake
@@ -9,6 +15,11 @@ needs:    cmake
 #if Windows? [ define: TO_WINDOWS define: _CRT_SECURE_NO_WARNINGS upx: on needs: msbuild]
 #if macOS?   [ define: TO_OSX     define: HAS_BOOL]
 #if Linux?   [ define: TO_LINUX ]
+
+#if macOS? [
+	sign: on
+	entitlements: %Entitlements.plist
+]
 
 target-x86: [
 	arch: x86
@@ -58,24 +69,26 @@ b2d-lib: [
 
 
 r3-extension: [
+	optimize: 3
 	source: %src/
 	files: only [
 		%blend2d-rebol-extension.c
 		%blend2d-command.c
+		%blend2d-commands-table.c
 		%blend2d-command-draw.c
 		%blend2d-command-path.c
 		%blend2d-command-font.c
 		%blend2d-command-image.c
 		%blend2d-command-info.c
-		;%blend2d-command-draw-test.c
+		%blend2d-command-draw-test.c
 	]
-	defines: [ENDIAN_LITTLE]
-	cflags:  [-fpermissive]
-	flags:   [-O2 shared]
+	defines: ENDIAN_LITTLE
+	cflags:  -fpermissive
+	flags:   shared
 
 	#if Posix? [
 		cflags: [-fPIC -pthread ]
-		;libraries: [%pthread]
+		libraries: [%pthread]
 	]
 	do %src/blend2d-rebol-extension.r3 
 ]
@@ -268,6 +281,16 @@ eggs: only [
 			cmd %_static_arm64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DBLEND2D_STATIC=TRUE -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
 			cmd %_static_arm64/ {cmake --build .}
 		]
+;		"Make Blend2D library tests (cmake) - x64" [
+;			arch: x64
+;			cmd %_test_x64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLEND2D_STATIC=TRUE -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DBLEND2D_TEST=1"
+;			cmd %_test_x64/ {cmake --build .}
+;		]
+;		"Make Blend2D library tests static (cmake) - x64" [
+;			arch: x64
+;			cmd %_test_st_x64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLEND2D_STATIC=TRUE -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DBLEND2D_TEST=1"
+;			cmd %_test_st_x64/ {cmake --build .}
+;		]
 ;		"Make Blend2D dynamic library (cmake) - x64" [
 ;			arch: x64
 ;			cmd %_dynamic_x64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DBLEND2D_STATIC=FALSE -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
@@ -339,7 +362,7 @@ eggs: only [
 			:r3-extension
 			:target-x64
 			compiler: clang
-			flag:    -dynamiclib
+			lflags:  [-dynamiclib]
 			flag:    -mmacosx-version-min=10.9 
 			defines: [BL_STATIC BLEND2D_BUILD_NO_CXX_LIB=1]
 			name: %blend2d-macos-x64
@@ -355,13 +378,30 @@ eggs: only [
 			name: %blend2d-macos-arm64
 			libraries: [%c %m %stdc++ %_static_arm64/ %blend2d]
 		]
-		"Test" [
-			name: %test
-			file: %test/test.c
-			compiler: clang
-			:target-x64
-			libraries: [%blend2d]
-		]
+;		"Test" [
+;			name: %test
+;			file: %test/test.c
+;			compiler: clang
+;			:target-x64
+;			;libraries: [%blend2d]
+;			libraries: [%c %m %stdc++ %_static_x64/ %blend2d]
+;		]
+;		"Sample_01" [
+;			name: %sample_01
+;			file: %blend2d/test/bl_sample_1.cpp
+;			include: %blend2d/include/
+;			compiler: %/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
+;			:target-x64
+;			flag: "-arch x86_64"
+;			flag: "-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk"
+;			flag: "-mmacosx-version-min=10.9"
+;			flag: "-fPIE"
+;			flag: -fvisibility=hidden
+;			cflags: ["-std=gnu++11"]
+;			define: BL_STATIC
+;			define: NDEBUG
+;			libraries: [%c  %pthread %_test_st_x64/ %blend2d]
+;		]
 	]
 	#if Linux? [
 		"Make 64bit Blend2D static library" [

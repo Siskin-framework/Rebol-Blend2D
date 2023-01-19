@@ -3,6 +3,38 @@ REBOL [
 	type: module
 ]
 
+commands: [
+	init-words: [cmd-words [block!] arg-words [block!]]
+	;--------------------------
+
+	;draw-test: [
+	;	{Draws test}
+	;	image [image! pair!]
+	;]
+	draw: [
+		{Draws scalable vector graphics to an image}
+		image [image! pair!]
+		commands [block!]
+	]
+	path: [
+		{Prepares path object}
+		commands [block!]
+	]
+	font: [
+		{Prepares font handle}
+		file [file! string!] {Font location or name}
+	]
+	image: [
+		{Prepares Blend2D's native image}
+		from [pair! image! file!]
+	]
+	info: [
+		{Returns info about Blend2D library}
+		/of handle [handle!] {Blend2D object}
+	]
+	;--------------------------
+]
+
 cmd-words: [
 	;@@ order of these is important!
 	move
@@ -116,114 +148,101 @@ arg-words: [
 ;	inner
 ;	outer
 
-
-]
-
-commands: [
-	init-words: [cmd-words [block!] arg-words [block!]]
-	;--------------------------
-
-	;draw-test: [
-	;	{Draws test}
-	;	image [image! pair!]
-	;]
-	draw: [
-		{Draws scalable vector graphics to an image}
-		image [image! pair!]
-		commands [block!]
-	]
-	path: [
-		{Prepares path object}
-		commands [block!]
-	]
-	font: [
-		{Prepares font handle}
-		file [file! string!] {Font location or name}
-	]
-	image: [
-		{Prepares Blend2D's native image}
-		from [pair! image! file!]
-	]
-	info: [
-		{Returns info about Blend2D library}
-		/of handle [handle!] {Blend2D object}
-	]
-
-	;--------------------------
-
 ]
 
 
-header: rejoin [
+;-------------------------------------- ----------------------------------------
+reb-code: ajoin [
 	{REBOL [Title: "Rebol Blend2D Extension"}
 	{ Name: blend2d Type: module Exports: [draw]}
-	{ Version: 0.0.18.0}
+	{ Version: 0.0.18.1}
 	{ Author: Oldes}
-	{ Date: } now
+	{ Date: } now/utc
 	{ License: Apache-2.0}
 	{ Url: https://github.com/Siskin-framework/Rebol-Blend2D}
 	#"]"
 ]
-enum-commands: {enum b2d_commands ^{}
-enum-cmd-words: {enum b2d_cmd_words ^{W_B2D_CMD_0,}
-enum-arg-words: {enum b2d_arg_words ^{W_B2D_ARG_0,}
+enu-commands:  "" ;; command name enumerations
+cmd-declares:  "" ;; command function declarations
+cmd-dispatch:  "" ;; command functionm dispatcher
+b2d-cmd-words: "enum b2d_cmd_words {W_B2D_CMD_0"
+b2d-arg-words: "enum b2d_arg_words {W_B2D_ARG_0"
 
+;- generate C and Rebol code from the command specifications -------------------
+foreach [name spec] commands [
+	append reb-code ajoin [lf name ": command "]
+	new-line/all spec false
+	append/only reb-code mold spec
+
+	name: form name
+	replace/all name #"-" #"_"
+	
+	append enu-commands ajoin ["^/^-CMD_B2D_" uppercase copy name #","]
+
+	append cmd-declares ajoin ["^/int cmd_" name "(RXIFRM *frm, void *ctx);"]
+	append cmd-dispatch ajoin ["^-cmd_" name ",^/"]
+]
+
+;- additional Rebol initialization code ----------------------------------------
 foreach word cmd-words [
 	word: uppercase form word
 	replace/all word #"-" #"_"
-	append enum-cmd-words ajoin ["^/^-W_B2D_CMD_" word #","]
+	append b2d-cmd-words ajoin [",^/^-W_B2D_CMD_" word]
 ]
 foreach word arg-words [
 	word: uppercase form word
 	replace/all word #"-" #"_"
-	append enum-arg-words ajoin ["^/^-W_B2D_ARG_" word #","]
+	append b2d-arg-words ajoin [",^/^-W_B2D_ARG_" word]
+]
+append b2d-cmd-words "^/};"
+append b2d-arg-words "^/};"
+append reb-code ajoin [{
+init-words words: } mold/flat cmd-words #" " mold/flat arg-words {
+protect/hide 'init-words}
 ]
 
+print reb-code
 
-
-foreach [name spec] commands [
-	append header ajoin [lf name ": command "]
-	new-line/all spec false
-	append/only header mold spec
-
-	name: uppercase form name
-	replace/all name #"-" #"_"
-	append enum-commands ajoin ["^/^-CMD_B2D_" name #","]
+;- convert Rebol code to C-string ----------------------------------------------
+init-code: copy ""
+foreach line split reb-code lf [
+	replace/all line #"^"" {\"}
+	append init-code ajoin [{\^/^-"} line {\n"}] 
 ]
 
-new-line/all cmd-words false
-new-line/all arg-words false
-append header rejoin [{^/init-words words: } mold cmd-words #" " mold arg-words]
-;append header {
-;system/dialects/draw:
-;dial-draw: context [
-;	type-spec:		[block!]
-;	fill-pen:       [tuple! image! logic!]
-;	box:            [pair! pair! decimal!]
-;	line:           [* pair!]
-;]}
-
-print header
-
-out: make string! 2000
-append out {// auto-generated file, do not modify! //
+;-- C file templates -----------------------------------------------------------
+header: {//
+// auto-generated file, do not modify!
+//
 
 #include "blend2d-command.h"
 
+#define MIN_REBOL_VER 3
+#define MIN_REBOL_REV 10
+#define MIN_REBOL_UPD 2
+#define VERSION(a, b, c) (a << 16) + (b << 8) + c
+#define MIN_REBOL_VERSION VERSION(MIN_REBOL_VER, MIN_REBOL_REV, MIN_REBOL_UPD)
+
+enum ext_commands {$enu-commands
+};
+
+$cmd-declares
+$b2d-cmd-words
+$b2d-arg-words
+
+typedef int (*MyCommandPointer)(RXIFRM *frm, void *ctx);
+
+#define B2D_EXT_INIT_CODE $init-code
 }
-append out join enum-commands "^/};^/"
-append out join enum-cmd-words "^/};^/"
-append out join enum-arg-words "^/};^/"
-append out {^/#define B2D_EXT_INIT_CODE \}
+;;------------------------------------------------------------------------------
+ctable: {//
+// auto-generated file, do not modify!
+//
+#include "blend2d-rebol-extension.h"
+MyCommandPointer Command[] = {
+$cmd-dispatch};
+}
 
-
-foreach line split header lf [
-	replace/all line #"^"" {\"}
-	append out ajoin [{^/^-"} line {\n"\}] 
-]
-append out "^/"
-
-
-print out
-
-write %blend2d-rebol-extension.h out
+;- output generated files ------------------------------------------------------
+write %blend2d-rebol-extension.h reword :header self
+write %blend2d-commands-table.c  reword :ctable self

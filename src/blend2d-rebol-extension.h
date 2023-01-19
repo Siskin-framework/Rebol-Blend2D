@@ -1,8 +1,16 @@
-// auto-generated file, do not modify! //
+//
+// auto-generated file, do not modify!
+//
 
 #include "blend2d-command.h"
 
-enum b2d_commands {
+#define MIN_REBOL_VER 3
+#define MIN_REBOL_REV 10
+#define MIN_REBOL_UPD 2
+#define VERSION(a, b, c) (a << 16) + (b << 8) + c
+#define MIN_REBOL_VERSION VERSION(MIN_REBOL_VER, MIN_REBOL_REV, MIN_REBOL_UPD)
+
+enum ext_commands {
 	CMD_B2D_INIT_WORDS,
 	CMD_B2D_DRAW,
 	CMD_B2D_PATH,
@@ -10,6 +18,14 @@ enum b2d_commands {
 	CMD_B2D_IMAGE,
 	CMD_B2D_INFO,
 };
+
+
+int cmd_init_words(RXIFRM *frm, void *ctx);
+int cmd_draw(RXIFRM *frm, void *ctx);
+int cmd_path(RXIFRM *frm, void *ctx);
+int cmd_font(RXIFRM *frm, void *ctx);
+int cmd_image(RXIFRM *frm, void *ctx);
+int cmd_info(RXIFRM *frm, void *ctx);
 enum b2d_cmd_words {W_B2D_CMD_0,
 	W_B2D_CMD_MOVE,
 	W_B2D_CMD_LINE,
@@ -50,7 +66,7 @@ enum b2d_cmd_words {W_B2D_CMD_0,
 	W_B2D_CMD_CLOSE,
 	W_B2D_CMD_CLIP,
 	W_B2D_CMD_FONT,
-	W_B2D_CMD_FILL_PEN,
+	W_B2D_CMD_FILL_PEN
 };
 enum b2d_arg_words {W_B2D_ARG_0,
 	W_B2D_ARG_PAD,
@@ -101,11 +117,13 @@ enum b2d_arg_words {W_B2D_ARG_0,
 	W_B2D_ARG_CLOSED,
 	W_B2D_ARG_CHORD,
 	W_B2D_ARG_SWEEP,
-	W_B2D_ARG_LARGE,
+	W_B2D_ARG_LARGE
 };
 
+typedef int (*MyCommandPointer)(RXIFRM *frm, void *ctx);
+
 #define B2D_EXT_INIT_CODE \
-	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.0.18.0 Author: Oldes Date: 16-Jan-2023/12:46:52+1:00 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
+	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.0.18.1 Author: Oldes Date: 19-Jan-2023/23:53:23+1:00 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
 	"init-words: command [cmd-words [block!] arg-words [block!]]\n"\
 	"draw: command [\"Draws scalable vector graphics to an image\" image [image! pair!] commands [block!]]\n"\
 	"path: command [\"Prepares path object\" commands [block!]]\n"\
@@ -113,3 +131,4 @@ enum b2d_arg_words {W_B2D_ARG_0,
 	"image: command [\"Prepares Blend2D's native image\" from [pair! image! file!]]\n"\
 	"info: command [\"Returns info about Blend2D library\" /of handle [handle!] \"Blend2D object\"]\n"\
 	"init-words words: [move line curve curv cubic quad hline vline qcurve qcurv polygon shape box circle ellipse arc image text fill-all clear clear-all point point-size triangle pen fill line-width line-cap line-join alpha blend composite reset-matrix rotate scale translate close clip font fill-pen] [pad tile flip tile-y flip-y tile-x tile-x-flip-y flip-x flip-x-tile-y linear radial conical source-over source-copy source-in source-out source-atop destination-over destination-copy destination-in destination-out destination-atop xor clear plus minus modulate multiply screen overlay darken lighten color-dodge color-burn linear-burn linear-light pin-light hard-light soft-light difference exclusion miter bevel round pie closed chord sweep large]\n"\
+	"protect/hide 'init-words\n"

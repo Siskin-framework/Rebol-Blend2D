@@ -4,7 +4,7 @@
 // Use on your own risc!
 
 #include "blend2d-rebol-extension.h"
-#include <inttypes.h>
+//#include <inttypes.h>
 
 const char* RuntimeCpuArchString(u32 val) {
 	switch (val) {
@@ -15,7 +15,7 @@ const char* RuntimeCpuArchString(u32 val) {
 	}
 }
 
-void b2d_info(RXIFRM* frm, void* reb_ctx) {
+int cmd_info(RXIFRM* frm, void* reb_ctx) {
 	// return library info...
 	REBI64 tail = 0;
 	REBSER* str = RL_MAKE_STRING(1000, FALSE); // 1024 bytes, latin1 (must be large enough!)
@@ -27,7 +27,7 @@ void b2d_info(RXIFRM* frm, void* reb_ctx) {
 			BLFontFaceInfo fontFaceInfo;
 			blFontFaceGetFaceInfo((BLFontFaceCore*)hob->data, &fontFaceInfo);
 			tail = snprintf(
-				SERIES_DATA(str),
+				SERIES_TEXT(str),
 				SERIES_REST(str),
 				"faceType:    %u\n"
 				"outlineType: %u\n"
@@ -48,10 +48,10 @@ void b2d_info(RXIFRM* frm, void* reb_ctx) {
 		else if (hob->sym == Handle_BLPath) {
 			BLPathCore* path = (BLPathCore*)hob->data;
 			tail = snprintf(
-				SERIES_DATA(str),
+				SERIES_TEXT(str),
 				SERIES_REST(str),
-				"size:     %" PRIu64 "\n"
-				"capacity: %" PRIu64 "\n",
+				"size:     %zu\n"
+				"capacity: %zu\n",
 				blPathGetSize(path),
 				blPathGetCapacity(path)
 			);
@@ -60,11 +60,11 @@ void b2d_info(RXIFRM* frm, void* reb_ctx) {
 			BLImageData imgData;
 			blImageGetData((BLImageCore*)hob->data, &imgData);
 			tail = snprintf(
-				SERIES_DATA(str),
+				SERIES_TEXT(str),
 				SERIES_REST(str),
 				"width:  %i\n"
 				"heigth: %i\n"
-				"stride: %" PRIu64 "\n"
+				"stride: %zu\n"
 				"format: %u\n"
 				"flags:  %u\n",
 				imgData.size.w,
@@ -85,7 +85,7 @@ void b2d_info(RXIFRM* frm, void* reb_ctx) {
 		blRuntimeQueryInfo(BL_RUNTIME_INFO_TYPE_RESOURCE, &resourceInfo);
 
 		tail = snprintf(
-			SERIES_DATA(str),
+			SERIES_TEXT(str),
 			SERIES_REST(str),
 			"Version:     %u.%u.%u\n"
 			"Build-type:  %s\n"
@@ -135,12 +135,13 @@ void b2d_info(RXIFRM* frm, void* reb_ctx) {
 		);
 	}
 	if (tail < 0) {
-		RXA_TYPE(frm, 1) = RXT_NONE;
+		return RXR_NONE;
 	}
 	else {
 		SERIES_TAIL(str) = tail;
 		RXA_SERIES(frm, 1) = str;
 		RXA_TYPE(frm, 1) = RXT_STRING;
 		RXA_INDEX(frm, 1) = 0;
+		return RXR_VALUE;
 	}
 }

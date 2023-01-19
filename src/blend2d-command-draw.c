@@ -8,7 +8,7 @@
 
 extern REBCNT b2d_init_path_from_block(BLPathCore* path, REBSER* cmds, REBCNT index);
 
-REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
+int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 	BLResult r;
 	BLImageCore img_target, img_pattern, img;
 	BLImageCore* current_img;
@@ -54,15 +54,22 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 		reb_img = (REBSER *)RXA_ARG(frm,1).image;
 	}
 	RXA_TYPE(frm, 1) = RXT_IMAGE;
-	RXA_ARG(frm, 1).width = w;
+	RXA_ARG(frm, 1).width  = w;
 	RXA_ARG(frm, 1).height = h;
 	RXA_ARG(frm, 1).image = reb_img;
 
 	r = blImageCreateFromData(&img_target, w, h, BL_FORMAT_PRGB32, reb_img->data, (intptr_t)w * 4, NULL, NULL);
-	if (r != BL_SUCCESS) return r;
+	if (r != BL_SUCCESS) {
+		RXA_SERIES(frm,1) = "Blend2D's blImageCreateFromData failed!";
+		return RXR_ERROR;
+	}
 
 	r = blContextInitAs(&ctx, &img_target, NULL);
-	if (r != BL_SUCCESS) return r;
+	if (r != BL_SUCCESS) {
+		blImageReset(&img_target);
+		RXA_SERIES(frm,1) = "Blend2D failed to initialize a context!";
+		return RXR_ERROR;
+	}
 
 	cmds = RXA_SERIES(frm, 2);
 	index = RXA_INDEX(frm, 2);
@@ -260,13 +267,14 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 			//TODO: use words instead of integers?
 			RESOLVE_INT_ARG(0);
 			cap = arg[0].int64;
-			if (cap >= BL_STROKE_CAP_MAX_VALUE) goto error; //invalid cap value
+			if (cap > BL_STROKE_CAP_MAX_VALUE) goto error; //invalid cap value
 			
 			RESOLVE_INT_ARG_OPTIONAL(1); // end cap
 			if (RXT_INTEGER == type) {
 				blContextSetStrokeCap(&ctx, BL_STROKE_CAP_POSITION_START, cap);
 				cap = arg[1].int64;
-				if (cap >= BL_STROKE_CAP_MAX_VALUE) {
+				if (cap > BL_STROKE_CAP_MAX_VALUE) {
+					goto error; //invalid cap value
 					//invalid cap value
 				}
 				blContextSetStrokeCap(&ctx, BL_STROKE_CAP_POSITION_END, cap);
@@ -373,14 +381,14 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 
 		case W_B2D_CMD_POINT:
 
-			type = RESOLVE_ARG(0); // center
+			RESOLVE_ARG(0); // center
 			if (type == RXT_PAIR) {
 				// it's allowed to have one or more pairs...
 				while (type == RXT_PAIR) {
 					point[0] = arg[0].pair.x;
 					point[1] = arg[0].pair.y;
 					DRAW_GEOMETRY(ctx, BL_GEOMETRY_TYPE_CIRCLE, point);
-					type = RESOLVE_PAIR_ARG(0, 0);
+					RESOLVE_PAIR_ARG(0, 0);
 				}
 				index--; // reset index back as the last resolved arg is not a pair anymore
 			}
@@ -406,7 +414,7 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 			break;
 
 		case W_B2D_CMD_TRIANGLE:
-			type = RESOLVE_ARG(0);
+			RESOLVE_ARG(0);
 			if (RXT_PAIR == type) {
 				index--;
 				while (FETCH_3_PAIRS(cmds, index, arg[0], arg[1], arg[2])) {
@@ -445,7 +453,7 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 			TO_RADIANS(doubles[5]);
 
 			// arc, pie or chord?
-			type = RL_GET_VALUE(cmds, index, &arg);
+			type = RL_GET_VALUE(cmds, index, &arg[4]);
 			if (fetch_word(cmds, index, b2d_arg_words, &cmd) && cmd >= W_B2D_ARG_PIE && cmd <= W_B2D_ARG_CHORD) {
 				index++;
 				type = (cmd == W_B2D_ARG_CHORD) ? BL_GEOMETRY_TYPE_CHORD : BL_GEOMETRY_TYPE_PIE;
@@ -527,7 +535,7 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 				font_face_ext = NULL;
 				REBSER *src = arg[0].series;
 				REBSER *file = RL_ENCODE_UTF8_STRING(SERIES_DATA(src), SERIES_TAIL(src), SERIES_WIDE(src)>1, FALSE);
-				r = blFontFaceCreateFromFile(&font_face, SERIES_DATA(file), BL_FILE_READ_MMAP_ENABLED | BL_FILE_READ_MMAP_AVOID_SMALL);
+				r = blFontFaceCreateFromFile(&font_face, cs_cast(SERIES_DATA(file)), BL_FILE_READ_MMAP_ENABLED | BL_FILE_READ_MMAP_AVOID_SMALL);
 				debug_print("r: %i\n", r);
 				if (BL_SUCCESS != r ) {
 					debug_print("Failed to load font! (%s) %i\n", SERIES_DATA(file), r);
@@ -693,6 +701,7 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 		continue;
 	error:
 		// command errors does not stop evaluation... remaining commands may be processed..
+		//TODO: these errors could be collected in blend2d module as warnings instead of this debug print!
 		debug_print("CMD error at index... %u\n", cmd_pos);
 		index = cmd_pos;
 		// find next valid command name
@@ -702,12 +711,6 @@ REBCNT b2d_draw(RXIFRM *frm, void *reb_ctx) {
 			}
 		}
 	} // while end
-
-	goto end_ctx; // skip error setup
-//end_error:
-//	debug_print("fatal error...");
-//	//TODO: provide some useful error info!
-//	err = 1;
 
 end_ctx:
 	// END ...
@@ -719,5 +722,11 @@ end_ctx:
 	blFontReset(&font);
 	blFontFaceReset(&font_face);
 	blContextReset(&ctx);
-	return err;
+	if (err == BL_SUCCESS) {
+		return RXR_VALUE;
+	} else {
+		debug_print("error: %u\n", err);
+		RXA_SERIES(frm,1) = "Blend2D draw failed!";
+		return RXR_ERROR;
+	}
 }

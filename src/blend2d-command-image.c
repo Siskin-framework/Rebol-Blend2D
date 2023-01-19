@@ -14,7 +14,7 @@ void* releaseImage(void* image) {
 BLResult b2d_init_image_from_file(BLImageCore* image, REBSER* fileName) {
 	BLArrayCore codecs;
 	blImageCodecArrayInitBuiltInCodecs(&codecs);
-	return blImageReadFromFile(image, fileName->data, &codecs);
+	return blImageReadFromFile(image, SERIES_TEXT(fileName), &codecs);
 }
 BLResult b2d_init_image_from_image(BLImageCore* image, void* data, REBINT width, REBINT height) {
 	return blImageCreateFromData(image, width, height, BL_FORMAT_PRGB32, data, (intptr_t)width * 4, NULL, NULL);
@@ -42,7 +42,7 @@ BLResult b2d_init_image_from_arg(BLImageCore* image, RXIARG arg, REBCNT type) {
 	return BL_ERROR_INVALID_VALUE;
 }
 
-REBCNT b2d_image(RXIFRM* frm, void* reb_ctx) {
+int cmd_image(RXIFRM* frm, void* reb_ctx) {
 	BLResult r;
 	BLImageCore* image;
 	REBHOB* hob = RL_MAKE_HANDLE_CONTEXT(Handle_BLImage);
@@ -63,9 +63,10 @@ REBCNT b2d_image(RXIFRM* frm, void* reb_ctx) {
 	RXA_HANDLE_TYPE(frm, 1) = hob->sym;
 	RXA_HANDLE_FLAGS(frm, 1) = hob->flags;
 	RXA_TYPE(frm, 1) = RXT_HANDLE;
-	return 0;
+	return RXR_VALUE;
 
 error:
-	trace("Failed to make image handle!");
-	return r;
+	RXA_SERIES(frm,1) = "Blend2D failed to make an image handle!";
+	return RXR_ERROR;
+
 }

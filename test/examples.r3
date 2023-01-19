@@ -1,10 +1,12 @@
 Rebol [
 	title: "Basic Blend2D extension usage examples"
 ]
+system/modules/blend2d: none ;; make sure that we use the local one 
+b2d: import 'blend2d
+
 ;about
 CI?: "true" = get-env "CI" 
 ;recycle/torture
-unless value? 'b2d [ b2d: import rejoin [%../blend2d- system/build/os #"-" system/build/arch %.rebx] ]
 
 ;- assets start
 texture: b2d/image %assets/texture.jpeg

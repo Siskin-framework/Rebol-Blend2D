@@ -2,9 +2,10 @@ Rebol [
 	title: "Basic Blend2D extension test"
 ]
 
-CI?: "true" = get-env "CI"
-
+system/modules/blend2d: none
 b2d: import 'blend2d
+
+CI?: "true" = get-env "CI"
 
 unless function? :view [view: none] ;= for systems without view
 
