@@ -191,6 +191,18 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 						type = RL_GET_VALUE(cmds, ++index, &arg[0]);
 					}
 				}
+				else if (RXT_BLOCK == type) {
+					REBSER *blk = arg[0].series;
+					REBCNT n = arg[0].index;
+					type = RL_GET_VALUE(blk, n, &arg[0]);
+					if (RXT_PAIR != type) goto error;
+					blPathMoveTo(&path, (double)arg[0].pair.x, (double)arg[0].pair.y);
+					type = RL_GET_VALUE(blk, ++n, &arg[0]);
+					while (RXT_PAIR == type) {
+						blPathLineTo(&path, (double)arg[0].pair.x, (double)arg[0].pair.y);
+						type = RL_GET_VALUE(blk, ++n, &arg[0]);
+					}
+				}
 				else if (RXT_VECTOR == type) {
 					REBSER *ser_points = arg[0].series;
 					if (VTSF64 != VECT_TYPE(ser_points)) goto error;
@@ -403,6 +415,18 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 					point[1] = data[1];
 					data += 2;
 					DRAW_GEOMETRY(ctx, BL_GEOMETRY_TYPE_CIRCLE, point);
+				}
+			}
+			else if (RXT_BLOCK == type) {
+				REBSER *blk = arg[0].series;
+				REBCNT  ind = arg[0].index;
+				type = RL_GET_VALUE(blk, ind, &arg[0]);
+				if (RXT_PAIR != type) goto error;
+				while (RXT_PAIR == type) {
+					point[0] = (double)arg[0].pair.x;
+					point[1] = (double)arg[0].pair.y;
+					DRAW_GEOMETRY(ctx, BL_GEOMETRY_TYPE_CIRCLE, point);
+					type = RL_GET_VALUE(blk, ++ind, &arg[0]);
 				}
 			}
 			break;

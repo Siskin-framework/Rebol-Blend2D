@@ -30,6 +30,7 @@ static const char* init_block = B2D_EXT_INIT_CODE;
 int cmd_init_words(RXIFRM *frm, void *ctx) {
 	b2d_cmd_words = RL_MAP_WORDS(RXA_SERIES(frm,1));
 	b2d_arg_words = RL_MAP_WORDS(RXA_SERIES(frm,2));
+	return RXR_TRUE;
 }
 
 RXIEXT const char *RX_Init(int opts, RL_LIB *lib) {
@@ -55,53 +56,6 @@ RXIEXT const char *RX_Init(int opts, RL_LIB *lib) {
 RXIEXT int RX_Call(int cmd, RXIFRM *frm, void *ctx) {
 	return Command[cmd](frm, ctx);
 }
-/*
-RXIEXT int RX_Call(int cmd, RXIFRM *frm, void *ctx) {
-	REBINT r;
-	switch (cmd) {
-	case CMD_B2D_INIT_WORDS:
-		b2d_cmd_words = RL_MAP_WORDS(RXA_SERIES(frm,1));
-		b2d_arg_words = RL_MAP_WORDS(RXA_SERIES(frm,2));
-		goto done;
-
-	case CMD_B2D_DRAW:
-		r = b2d_draw(frm, ctx);
-		if (r == BL_SUCCESS) return RXR_VALUE;
-		debug_print("error: %d\n", r);
-		RXA_SERIES(frm,1) = "Blend2D draw failed!";
-		return RXR_ERROR;
-
-	case CMD_B2D_PATH:
-		b2d_path(frm, ctx);
-		return RXR_VALUE;
-
-	case CMD_B2D_IMAGE:
-		if (BL_SUCCESS == b2d_image(frm, ctx)) return RXR_VALUE;
-		return RXR_NONE;
-
-	case CMD_B2D_FONT:
-		if (BL_SUCCESS == b2d_font(frm, ctx)) return RXR_VALUE;
-		return RXR_NONE;
-
-	case CMD_B2D_INFO:
-		b2d_info(frm, ctx);
-		return RXR_VALUE;
-
-//	case CMD_B2D_DRAW_TEST:
-//		trace("draw test");
-//		r = b2d_draw_test(frm, ctx);
-//		if (r == BL_SUCCESS) return RXR_VALUE;
-//		debug_print("error: %d\n", r);
-//		goto done;
-	}
-
-	if (ctx == NULL) {
-		return RXR_ERROR;
-	}
-
-done:
-    return RXR_NONE;
-}*/
 
 RXIEXT int RX_Quit(int opts) {
     return 0;
