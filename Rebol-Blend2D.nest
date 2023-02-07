@@ -83,14 +83,26 @@ r3-extension: [
 		%blend2d-command-info.c
 		%blend2d-command-draw-test.c
 	]
-	defines: ENDIAN_LITTLE
+	define: ENDIAN_LITTLE
+	define: BL_STATIC
+	define: BLEND2D_BUILD_NO_CXX_LIB=1
+
 	cflags:  -fpermissive
 	flags:   shared
 
+	#if macOS? [
+		lflags:  [-dynamiclib]
+		flag:    -mmacosx-version-min=10.9
+	]
 	#if Posix? [
-		cflags: [-fPIC -pthread ]
+		compiler: clang
+		cflags: [-fPIC -pthread]
 		libraries: [%pthread]
 	]
+	#if Windows? [
+		upx: on
+	]
+
 	do %src/blend2d-rebol-extension.r3 
 ]
 
@@ -245,11 +257,17 @@ b2d-files: [
 
 eggs: only [
 	#if Windows? [
+		"Make Blend2D static library (cmake) - x86" [
+			arch: x86
+			name: %static-lib-x86
+			cmd %_static_x86/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
+			cmd %_static_x86/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=Win32}
+		]
 		"Make Blend2D static library (cmake) - x64" [
 			arch: x64
 			name: %static-lib-x64
-			cmd %_static/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
-			cmd %_static/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=x64}
+			cmd %_static_x64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
+			cmd %_static_x64/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=x64}
 		]
 		"Make Blend2D dynamic library (cmake) - x64" [
 			arch: x64
@@ -262,14 +280,17 @@ eggs: only [
 			cmd %_test/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_TEST=1"
 			cmd %_test/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=x64}
 		]
+		"Rebol/Blend2D extension - x86" [
+			:r3-extension
+			:target-x86
+			name: %blend2d-windows-x86
+			libraries: [%_static_x86/Release/blend2d]
+		]
 		"Rebol/Blend2D extension - x64" [
 			:r3-extension
 			:target-x64
-			#if Windows? [upx: on]
-
-			defines: [BL_STATIC BLEND2D_BUILD_NO_CXX_LIB=1]
 			name: %blend2d-windows-x64
-			libraries: [%_static/Release/blend2d]
+			libraries: [%_static_x64/Release/blend2d]
 		]
 	]
 
@@ -366,20 +387,12 @@ eggs: only [
 		"Rebol/Blend2D extension - x64" [
 			:r3-extension
 			:target-x64
-			compiler: clang
-			lflags:  [-dynamiclib]
-			flag:    -mmacosx-version-min=10.9 
-			defines: [BL_STATIC BLEND2D_BUILD_NO_CXX_LIB=1]
 			name: %blend2d-macos-x64
 			libraries: [%c %m %stdc++ %_static_x64/ %blend2d]
 		]
 		"Rebol/Blend2D extension - arm64 (only partial support in B2D!)" [
 			:r3-extension
 			:target-arm64
-			compiler: clang
-			flag:    -dynamiclib
-			flag:    -mmacosx-version-min=10.9 
-			defines: [BL_STATIC BLEND2D_BUILD_NO_CXX_LIB=1]
 			name: %blend2d-macos-arm64
 			libraries: [%c %m %stdc++ %_static_arm64/ %blend2d]
 		]
@@ -418,8 +431,6 @@ eggs: only [
 		"Rebol extension" [
 			:r3-extension
 			:target-x64
-			compiler: clang
-			defines: [BL_STATIC BLEND2D_BUILD_NO_CXX_LIB=1]
 			name: %blend2d-linux-x64
 			libraries: [%c %m %stdc++ %_static_linux/ %blend2d]
 		]
