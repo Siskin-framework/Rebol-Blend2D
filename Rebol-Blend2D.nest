@@ -19,6 +19,7 @@ needs:    cmake
 #if macOS? [
 	sign: on
 	entitlements: %Entitlements.plist
+	define: DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING
 ]
 
 target-x86: [
@@ -246,11 +247,13 @@ eggs: only [
 	#if Windows? [
 		"Make Blend2D static library (cmake) - x64" [
 			arch: x64
+			name: %static-lib-x64
 			cmd %_static/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
 			cmd %_static/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=x64}
 		]
 		"Make Blend2D dynamic library (cmake) - x64" [
 			arch: x64
+			name: %dynamic-lib-x64
 			cmd %_dynamic/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=FALSE -DASMJIT_DIR=../asmjit/"
 			cmd %_dynamic/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=x64}
 		]
@@ -273,11 +276,13 @@ eggs: only [
 	#if macOS? [
 		"Make Blend2D static library (cmake) - x64" [
 			arch: x64
+			name: %static-lib-x64
 			cmd %_static_x64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DBLEND2D_STATIC=TRUE -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
 			cmd %_static_x64/ {cmake --build .}
 		]
 		"Make Blend2D static library (cmake) - arm64" [
 			arch: arm64
+			name: %static-lib-arm64
 			cmd %_static_arm64/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DBLEND2D_STATIC=TRUE -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
 			cmd %_static_arm64/ {cmake --build .}
 		]
@@ -406,6 +411,7 @@ eggs: only [
 	#if Linux? [
 		"Make 64bit Blend2D static library" [
 			arch: x64
+			name: %static-lib-x64
 			cmd %_static_linux/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DASMJIT_DIR=../asmjit"
 			cmd %_static_linux/ {cmake --build .}
 		]
