@@ -260,7 +260,7 @@ eggs: only [
 		"Make Blend2D static library (cmake) - x86" [
 			arch: x86
 			name: %static-lib-x86
-			cmd %_static_x86/ "cmake ../blend2d/ -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
+			cmd %_static_x86/ "cmake ../blend2d/ -A Win32 -DCMAKE_BUILD_TYPE=Release -DBLEND2D_STATIC=TRUE -DASMJIT_DIR=../asmjit/"
 			cmd %_static_x86/ {msbuild blend2d.sln /p:Configuration=Release /p:Platform=Win32}
 		]
 		"Make Blend2D static library (cmake) - x64" [
