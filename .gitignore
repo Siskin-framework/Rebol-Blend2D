@@ -7,3 +7,4 @@
 !/test
 !/Rebol-Blend2D.nest
 !/Entitlements.plist
+!/ci-test.r3
