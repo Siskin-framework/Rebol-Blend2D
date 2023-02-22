@@ -1,4 +1,5 @@
 [![Rebol-Blend2D CI](https://github.com/Siskin-framework/Rebol-Blend2D/actions/workflows/main.yml/badge.svg)](https://github.com/Siskin-framework/Rebol-Blend2D/actions/workflows/main.yml)
+[![Zulip](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://rebol.zulipchat.com/)
 
 # Rebol/Blend2D
 
