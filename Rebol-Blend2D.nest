@@ -7,7 +7,7 @@ github: @asmjit
 github: @blend2d
 ;github: blend2d/blend2d-samples
 
-version: 0.0.18 ;; clang allows only x.y.z version naming!
+version: 0.10.4 ;; clang allows only x.y.z version naming!
 
 compiler: gcc
 needs:    cmake

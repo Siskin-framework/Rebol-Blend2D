@@ -642,6 +642,8 @@ parse raw-src [
 	)
 ]
 
+total-time: 0:0:0
+
 foreach [file code] examples [
 	out: rejoin [%assets/gen/ file %.png]
 	print [as-red "Drawing example:" as-green mold out]
@@ -668,7 +670,7 @@ foreach [file code] examples [
 			]
 		]
 
-		img: draw 480x480 code
+		total-time: total-time + delta-time [img: draw 480x480 code]
 		save out img
 
 		append page rejoin [
@@ -676,6 +678,8 @@ foreach [file code] examples [
 		]
 	][ print system/state/last-error ]
 ]
+
+print ["Time:" total-time]
 
 append page {
 * * * *

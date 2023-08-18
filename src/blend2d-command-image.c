@@ -17,7 +17,7 @@ BLResult b2d_init_image_from_file(BLImageCore* image, REBSER* fileName) {
 	return blImageReadFromFile(image, SERIES_TEXT(fileName), &codecs);
 }
 BLResult b2d_init_image_from_image(BLImageCore* image, void* data, REBINT width, REBINT height) {
-	return blImageCreateFromData(image, width, height, BL_FORMAT_PRGB32, data, (intptr_t)width * 4, NULL, NULL);
+	return blImageCreateFromData(image, width, height, BL_FORMAT_PRGB32, data, (intptr_t)width * 4, BL_DATA_ACCESS_RW, NULL, NULL);
 }
 
 BLResult b2d_init_image_from_arg(BLImageCore* image, RXIARG arg, REBCNT type) {
@@ -31,7 +31,7 @@ BLResult b2d_init_image_from_arg(BLImageCore* image, RXIARG arg, REBCNT type) {
 //		return BL_SUCCESS;
 	case RXT_IMAGE:
 		blImageReset(image);
-		return blImageCreateFromData(image, arg.width, arg.height, BL_FORMAT_PRGB32, ((REBSER*)arg.series)->data, (intptr_t)arg.width * 4, NULL, NULL);
+		return blImageCreateFromData(image, arg.width, arg.height, BL_FORMAT_PRGB32, ((REBSER*)arg.series)->data, (intptr_t)arg.width * 4, BL_DATA_ACCESS_RW, NULL, NULL);
 	case RXT_FILE:
 		blImageReset(image);
 		return b2d_init_image_from_file(image, (REBSER*)arg.series);

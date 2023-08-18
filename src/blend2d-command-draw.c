@@ -35,6 +35,8 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 	REBDEC font_size = 10.0;
 	REBDEC point[4] = { 0,0,1.0,1.0 }; // default size of the point is 2px
 
+	BLPoint origin = {0};
+
 	blPathInit(&path);
 	blImageInit(&img_target);
 	blImageInit(&img_pattern);
@@ -58,7 +60,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 	RXA_ARG(frm, 1).height = h;
 	RXA_ARG(frm, 1).image = reb_img;
 
-	r = blImageCreateFromData(&img_target, w, h, BL_FORMAT_PRGB32, reb_img->data, (intptr_t)w * 4, NULL, NULL);
+	r = blImageCreateFromData(&img_target, w, h, BL_FORMAT_PRGB32, reb_img->data, (intptr_t)w * 4, BL_DATA_ACCESS_WRITE, NULL, NULL);
 	if (r != BL_SUCCESS) {
 		RXA_SERIES(frm,1) = "Blend2D's blImageCreateFromData failed!";
 		return RXR_ERROR;
@@ -90,7 +92,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 
 			RESOLVE_ARG(0)
 			if (RXT_TUPLE == type) {
-				debug_print("Fill color: %u\n", TUPLE_TO_COLOR(arg[0]));
+				//debug_print("Fill color: %u\n", TUPLE_TO_COLOR(arg[0]));
 				blContextSetFillStyleRgba32(&ctx, TUPLE_TO_COLOR(arg[0]));
 				has_fill = TRUE;
 			}
@@ -103,7 +105,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 				goto pattern_mode;
 			} else if (type == RXT_IMAGE) {
 				blImageReset(&img_pattern);
-				r = blImageCreateFromData(&img_pattern, arg[0].width, arg[0].height, BL_FORMAT_PRGB32, ((REBSER*)arg[0].series)->data, (intptr_t)arg[0].width * 4, NULL, NULL);
+				r = blImageCreateFromData(&img_pattern, arg[0].width, arg[0].height, BL_FORMAT_PRGB32, ((REBSER*)arg[0].series)->data, (intptr_t)arg[0].width * 4, BL_DATA_ACCESS_READ, NULL, NULL);
 				if (r != BL_SUCCESS) goto error;
 				current_img = &img_pattern;
 			pattern_mode:
@@ -159,7 +161,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 				if(!arg[0].int32a) has_stroke = FALSE;
 			} else if (type == RXT_IMAGE) {
 				blImageInit(&img_pattern);
-				r = blImageCreateFromData(&img_pattern, arg[0].width, arg[0].height, BL_FORMAT_PRGB32, ((REBSER*)arg[0].series)->data, (intptr_t)arg[0].width * 4, NULL, NULL);
+				r = blImageCreateFromData(&img_pattern, arg[0].width, arg[0].height, BL_FORMAT_PRGB32, ((REBSER*)arg[0].series)->data, (intptr_t)arg[0].width * 4, BL_DATA_ACCESS_READ, NULL, NULL);
 				if (r != BL_SUCCESS) {
 					trace("failed to init pattern image!");
 					goto error;
@@ -233,7 +235,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 						}
 					}
 				} else goto error;
-				blContextStrokePathD(&ctx, &path);
+				blContextStrokePathD(&ctx, &origin, &path);
 				blPathReset(&path);
 			}
 			break;
@@ -310,8 +312,8 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 				);
 				index += 3;
 			}
-			if (has_fill) blContextFillPathD(&ctx, &path);
-			if (has_stroke) blContextStrokePathD(&ctx, &path);
+			if (has_fill) blContextFillPathD(&ctx, &origin, &path);
+			if (has_stroke) blContextStrokePathD(&ctx, &origin, &path);
 			
 			blPathReset(&path);
 			break;
@@ -625,30 +627,34 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 			blFontGetTextMetrics(&font, &gb, &tm);
 			debug_print("siz: %f %f %f %f\n", tm.boundingBox.x0, tm.boundingBox.y0, tm.boundingBox.x1, tm.boundingBox.y1);
 
-			blContextFillTextD(&ctx, &pt, &font, SERIES_DATA(str), SERIES_TAIL(str), SERIES_WIDE(str)==1?BL_TEXT_ENCODING_LATIN1:BL_TEXT_ENCODING_UTF16);
+			if (SERIES_WIDE(str)==1) {
+				blContextFillUtf8TextD(&ctx, &pt, &font, SERIES_DATA(str), SERIES_TAIL(str));
+			} else {
+				blContextFillUtf16TextD(&ctx, &pt, &font, SERIES_DATA(str), SERIES_TAIL(str));
+			}
 			blGlyphBufferReset(&gb);
 
 			break;
 
 		case W_B2D_CMD_SCALE:
 			RESOLVE_NUMBER_OR_PAIR_ARG(0, 0);
-			blContextMatrixOp(&ctx, BL_MATRIX2D_OP_POST_SCALE, doubles);
+			blContextApplyTransformOp(&ctx, BL_TRANSFORM_OP_POST_SCALE, doubles);
 			break;
 
 		case W_B2D_CMD_ROTATE:
 			RESOLVE_NUMBER_ARG(0, 0);
 			TO_RADIANS(doubles[0]);
 			RESOLVE_PAIR_ARG_OPTIONAL(1, 1);
-			blContextMatrixOp(&ctx, type ? BL_MATRIX2D_OP_POST_ROTATE_PT : BL_MATRIX2D_OP_POST_ROTATE, doubles);
+			blContextApplyTransformOp(&ctx, type ? BL_TRANSFORM_OP_POST_ROTATE_PT : BL_TRANSFORM_OP_POST_ROTATE, doubles);
 			break;
 
 		case W_B2D_CMD_TRANSLATE:
 			RESOLVE_PAIR_ARG(0, 0);
-			blContextMatrixOp(&ctx, BL_MATRIX2D_OP_POST_TRANSLATE, doubles);
+			blContextApplyTransformOp(&ctx, BL_TRANSFORM_OP_POST_TRANSLATE, doubles);
 			break;
 
 		case W_B2D_CMD_RESET_MATRIX:
-			blContextMatrixOp(&ctx, BL_MATRIX2D_OP_RESET, NULL);
+			blContextApplyTransformOp(&ctx, BL_TRANSFORM_OP_RESET, NULL);
 			break;
 
 		case W_B2D_CMD_ALPHA:
@@ -738,7 +744,8 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 
 end_ctx:
 	// END ...
-	//trace("Cleaning...");
+	trace("Cleaning...");
+//	blContextFlush(&ctx, BL_CONTEXT_FLUSH_SYNC);
 	blContextEnd(&ctx);
 	blImageReset(&img_target);
 	//blImageReset(&img_pattern);
