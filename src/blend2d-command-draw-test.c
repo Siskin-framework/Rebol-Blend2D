@@ -31,7 +31,7 @@ int cmd_draw_test(RXIFRM *frm, void *reb_ctx) {
 	RXA_ARG(frm, 1).image = reb_img;
 
 	blImageInit(&img);
-	r = blImageCreateFromData(&img, w, h, BL_FORMAT_PRGB32, reb_img->data, (intptr_t)w * 4, NULL, NULL);
+	r = blImageCreateFromData(&img, w, h, BL_FORMAT_PRGB32, reb_img->data, (intptr_t)w * 4, BL_DATA_ACCESS_WRITE, NULL, NULL);
 	if (r != BL_SUCCESS) return r;
 
 	r = blContextInitAs(&ctx, &img, NULL);
@@ -41,9 +41,7 @@ int cmd_draw_test(RXIFRM *frm, void *reb_ctx) {
 
 	BLGradientCore gradient;
 	BLLinearGradientValues values = { 0, 0, 256, 256 };
-	r = blGradientInitAs(&gradient,
-	BL_GRADIENT_TYPE_LINEAR, &values,
-	BL_EXTEND_MODE_PAD, NULL, 0, NULL);
+	r = blGradientInitAs(&gradient, BL_GRADIENT_TYPE_LINEAR, &values, BL_EXTEND_MODE_PAD, NULL, 0, NULL);
 	if (r != BL_SUCCESS) return 1;
 
 	blGradientAddStopRgba32(&gradient, 0.0, 0xFFFFFFFFu);
@@ -53,11 +51,6 @@ int cmd_draw_test(RXIFRM *frm, void *reb_ctx) {
 	blContextSetFillStyle(&ctx, &gradient);
 	blContextFillAll(&ctx);
 	blGradientReset(&gradient);
-
-	BLCircle circle;
-	circle.cx = 128;
-	circle.cy = 128;
-	circle.r = 64;
 
 
 end_ctx:
