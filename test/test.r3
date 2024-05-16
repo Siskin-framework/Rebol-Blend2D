@@ -2,10 +2,12 @@ Rebol [
 	title: "Basic Blend2D extension test"
 ]
 
-system/modules/blend2d: none
-b2d: import 'blend2d
-
 CI?: "true" = get-env "CI"
+;; for the CI test the module is in current directory 
+if CI? [system/options/modules: what-dir]
+
+system/modules/blend2d: none ;; make sure that we use the local one 
+b2d: import 'blend2d
 
 unless function? :view [view: none] ;= for systems without view
 

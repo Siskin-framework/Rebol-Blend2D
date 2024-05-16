@@ -1,12 +1,17 @@
 Rebol [
 	title: "Basic Blend2D extension usage examples"
 ]
+
+CI?: "true" = get-env "CI"
+;; for the CI test the module is in current directory 
+if CI? [system/options/modules: what-dir]
+
 system/modules/blend2d: none ;; make sure that we use the local one 
 b2d: import 'blend2d
 
 print b2d/info
 ;about
-CI?: "true" = get-env "CI" 
+
 ;recycle/torture
 
 ;- assets start
