@@ -17,10 +17,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Siskin Builder
-      uses: oldes/install-siskin@v0.7.1
+      uses: oldes/install-siskin@v0.17.0
 
     - name: Build 64bit static Blend2d library
       run: ./siskin Rebol-Blend2D.nest static-lib-x64
@@ -32,7 +32,7 @@ jobs:
       run:  COPY .\msvc\Release-x64\blend2d-windows-x64.dll .\test\blend2d-windows-x64.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.10.2
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk # premultiply is not part of Core in this version
 
@@ -55,10 +55,10 @@ jobs:
     runs-on: macos-12
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Siskin Builder
-      uses: oldes/install-siskin@v0.7.1
+      uses: oldes/install-siskin@v0.17.0
 
     - name: Build 64bit static Blend2d library
       run: ./siskin Rebol-Blend2D.nest static-lib-x64
@@ -70,7 +70,7 @@ jobs:
       run:  mv ./build/blend2d-macos-x64.dylib ./test/blend2d-macos-x64.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.10.2
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk # premultiply is not part of Core in this version
 
@@ -95,10 +95,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Siskin Builder
-      uses: oldes/install-siskin@v0.7.1
+      uses: oldes/install-siskin@v0.17.0
 
     - name: Build 64bit static Blend2d library
       run: ./siskin Rebol-Blend2D.nest static-lib-x64
@@ -110,7 +110,7 @@ jobs:
       run:  mv ./build/blend2d-linux-x64.so ./test/blend2d-linux-x64.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.10.2
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk # premultiply is not part of Core in this version
 

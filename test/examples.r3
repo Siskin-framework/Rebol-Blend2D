@@ -4,6 +4,7 @@ Rebol [
 system/modules/blend2d: none ;; make sure that we use the local one 
 b2d: import 'blend2d
 
+print b2d/info
 ;about
 CI?: "true" = get-env "CI" 
 ;recycle/torture
@@ -17,7 +18,7 @@ text: "The quick brown fox jumps over the lazy dog. 123456780"
 
 grid10x10: draw 20x20 [fill 215.215.215 box 0x0 10x10 box 10x10 20x20]
 center:  240x240
-points:  #[f64! [100 100  100 380  380 380  380 100]]
+points:  #(f64! [100 100  100 380  380 380  380 100])
 points2: skip points 2
 points-in-block: [
 	0x200 2x198.056 4x196.544 6x195.464 8x194.816 10x194.6 12x194.816 14x195.464 16x196.544 18x198.056
@@ -65,8 +66,12 @@ examples: [
 	]
 
 	%fill-conical [
-		fill conical 255.255.255 0 95.175.223 0.5 255.255.255 1 240x240 0x240
+		fill conical 255.255.255 0 95.175.223 0.5 255.255.255 1 240x240
 		fill-all
+		fill conical 255.255.255 0 95.175.223 0.5 255.255.255 1 240x240 3.14 ;; rotated
+		circle 240x240 200
+		fill conical 255.255.255 0 95.175.223 0.5 255.255.255 1 240x240 0 12 ;; repeated
+		circle 240x240 100
 	]
 
 	%clear [

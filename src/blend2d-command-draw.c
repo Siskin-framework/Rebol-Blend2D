@@ -136,12 +136,19 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 				index--;
 
 				RESOLVE_PAIR_ARG(0, 0);
-				RESOLVE_PAIR_ARG(0, 2);
 				if (mode == BL_GRADIENT_TYPE_RADIAL) {
+					RESOLVE_PAIR_ARG(0, 2);
 					RESOLVE_NUMBER_ARG(3, 4);
 					blGradientSetValues(&gradient, 0, doubles, 5);
 				}
-				else {
+				else if (mode == BL_GRADIENT_TYPE_LINEAR) {
+					RESOLVE_PAIR_ARG(0, 2);
+					blGradientSetValues(&gradient, 0, doubles, 4);
+				}
+				else {// conical
+					doubles[2] = 0; RESOLVE_NUMBER_ARG_OPTIONAL(0, 2)
+					doubles[3] = 1; RESOLVE_NUMBER_ARG_OPTIONAL(1, 3)
+					blGradientSetExtendMode(&gradient, BL_EXTEND_MODE_REPEAT);
 					blGradientSetValues(&gradient, 0, doubles, 4);
 				}
 				blContextSetFillStyle(&ctx, &gradient);
