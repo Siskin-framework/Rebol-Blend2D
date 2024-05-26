@@ -634,10 +634,10 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 			blFontGetTextMetrics(&font, &gb, &tm);
 			debug_print("siz: %f %f %f %f\n", tm.boundingBox.x0, tm.boundingBox.y0, tm.boundingBox.x1, tm.boundingBox.y1);
 
-			if (SERIES_WIDE(str)==1) {
-				blContextFillUtf8TextD(&ctx, &pt, &font, SERIES_DATA(str), SERIES_TAIL(str));
+			if (BYTE_SIZE(str)) {
+				blContextFillUtf8TextD(&ctx, &pt, &font, (char*)SERIES_DATA(str), SERIES_TAIL(str));
 			} else {
-				blContextFillUtf16TextD(&ctx, &pt, &font, SERIES_DATA(str), SERIES_TAIL(str));
+				blContextFillUtf16TextD(&ctx, &pt, &font, (uint16_t*)SERIES_DATA(str), SERIES_TAIL(str));
 			}
 			blGlyphBufferReset(&gb);
 
