@@ -155,7 +155,7 @@ arg-words: [
 reb-code: ajoin [
 	{REBOL [Title: "Rebol Blend2D Extension"}
 	{ Name: blend2d Type: module Exports: [draw]}
-	{ Version: 0.0.18.2}
+	{ Version: 0.11.1.0}
 	{ Author: Oldes}
 	{ Date: } now/utc
 	{ License: Apache-2.0}

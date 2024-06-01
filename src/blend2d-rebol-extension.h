@@ -123,7 +123,7 @@ enum b2d_arg_words {W_B2D_ARG_0,
 typedef int (*MyCommandPointer)(RXIFRM *frm, void *ctx);
 
 #define B2D_EXT_INIT_CODE \
-	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.0.18.2 Author: Oldes Date: 16-May-2024/12:31:24 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
+	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.11.1.0 Author: Oldes Date: 1-Jun-2024/12:16:17 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
 	"init-words: command [cmd-words [block!] arg-words [block!]]\n"\
 	"draw: command [\"Draws scalable vector graphics to an image\" image [image! pair!] commands [block!]]\n"\
 	"path: command [\"Prepares path object\" commands [block!]]\n"\
