@@ -7,7 +7,7 @@ github: @asmjit
 github: @blend2d
 ;github: blend2d/blend2d-samples
 
-version: 0.11.1 ;; clang allows only x.y.z version naming!
+version: 0.11.5 ;; clang allows only x.y.z version naming!
 
 compiler: gcc
 needs:    cmake
@@ -81,6 +81,7 @@ r3-extension: [
 		%blend2d-command-font.c
 		%blend2d-command-image.c
 		%blend2d-command-info.c
+		%blend2d-command-set-threads.c
 		%blend2d-command-draw-test.c
 	]
 	define: ENDIAN_LITTLE

@@ -32,6 +32,11 @@ commands: [
 		{Returns info about Blend2D library}
 		/of handle [handle!] {Blend2D object}
 	]
+
+	set-threads: [
+		{Sets number of threads to be used}
+		count [integer!] {0 means synchronous rendering; 1 is for async on main thread only else thread pool is used}
+	]
 	;--------------------------
 ]
 
@@ -155,13 +160,27 @@ arg-words: [
 reb-code: ajoin [
 	{REBOL [Title: "Rebol Blend2D Extension"}
 	{ Name: blend2d Type: module Exports: [draw]}
-	{ Version: 0.11.1.0}
+	{ Version: 0.11.5.0}
 	{ Author: Oldes}
 	{ Date: } now/utc
 	{ License: Apache-2.0}
 	{ Url: https://github.com/Siskin-framework/Rebol-Blend2D}
 	#"]"
 ]
+
+logo: next {
+//   ____  __   __        ______        __
+//  / __ \/ /__/ /__ ___ /_  __/__ ____/ /
+// / /_/ / / _  / -_|_-<_ / / / -_) __/ _ \
+// \____/_/\_,_/\__/___(@)_/  \__/\__/_// /
+//  ~~~ oldes.huhuman at gmail.com ~~~ /_/
+//
+// Project: Rebol/Blend2D extension
+// SPDX-License-Identifier: Apache-2.0
+// =============================================================================
+// NOTE: auto-generated file, do not modify!
+}
+
 enu-commands:  "" ;; command name enumerations
 cmd-declares:  "" ;; command function declarations
 cmd-dispatch:  "" ;; command functionm dispatcher
@@ -211,10 +230,7 @@ foreach line split reb-code lf [
 ]
 
 ;-- C file templates -----------------------------------------------------------
-header: {//
-// auto-generated file, do not modify!
-//
-
+header: {$logo
 #include "blend2d-command.h"
 
 #define MIN_REBOL_VER 3
@@ -235,9 +251,7 @@ typedef int (*MyCommandPointer)(RXIFRM *frm, void *ctx);
 #define B2D_EXT_INIT_CODE $init-code
 }
 ;;------------------------------------------------------------------------------
-ctable: {//
-// auto-generated file, do not modify!
-//
+ctable: {$logo
 #include "blend2d-rebol-extension.h"
 MyCommandPointer Command[] = {
 $cmd-dispatch};

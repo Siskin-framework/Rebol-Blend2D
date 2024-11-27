@@ -1,7 +1,13 @@
+//   ____  __   __        ______        __
+//  / __ \/ /__/ /__ ___ /_  __/__ ____/ /
+// / /_/ / / _  / -_|_-<_ / / / -_) __/ _ \
+// \____/_/\_,_/\__/___(@)_/  \__/\__/_// /
+//  ~~~ oldes.huhuman at gmail.com ~~~ /_/
 //
-// Blend2D experimental Rebol extension
-// ====================================
-// Use on your own risc!
+// SPDX-License-Identifier: Apache-2.0
+// =============================================================================
+// Rebol/Blend2D extension commands
+// =============================================================================
 
 #include "blend2d-rebol-extension.h"
 
@@ -20,6 +26,8 @@ REBCNT Handle_BLImage;
 
 REBDEC doubles[DOUBLE_BUFFER_SIZE];
 RXIARG arg[ARG_BUFFER_SIZE];
+
+uint32_t threadCount = 1;
 
 extern MyCommandPointer Command[];            // in blend2d-rebol-extension.c //
 //============================================================================//

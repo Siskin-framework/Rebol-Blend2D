@@ -1,6 +1,13 @@
+//   ____  __   __        ______        __
+//  / __ \/ /__/ /__ ___ /_  __/__ ____/ /
+// / /_/ / / _  / -_|_-<_ / / / -_) __/ _ \
+// \____/_/\_,_/\__/___(@)_/  \__/\__/_// /
+//  ~~~ oldes.huhuman at gmail.com ~~~ /_/
 //
-// auto-generated file, do not modify!
-//
+// Project: Rebol/Blend2D extension
+// SPDX-License-Identifier: Apache-2.0
+// =============================================================================
+// NOTE: auto-generated file, do not modify!
 
 #include "blend2d-command.h"
 
@@ -17,6 +24,7 @@ enum ext_commands {
 	CMD_B2D_FONT,
 	CMD_B2D_IMAGE,
 	CMD_B2D_INFO,
+	CMD_B2D_SET_THREADS,
 };
 
 
@@ -26,6 +34,7 @@ int cmd_path(RXIFRM *frm, void *ctx);
 int cmd_font(RXIFRM *frm, void *ctx);
 int cmd_image(RXIFRM *frm, void *ctx);
 int cmd_info(RXIFRM *frm, void *ctx);
+int cmd_set_threads(RXIFRM *frm, void *ctx);
 enum b2d_cmd_words {W_B2D_CMD_0,
 	W_B2D_CMD_MOVE,
 	W_B2D_CMD_LINE,
@@ -123,12 +132,13 @@ enum b2d_arg_words {W_B2D_ARG_0,
 typedef int (*MyCommandPointer)(RXIFRM *frm, void *ctx);
 
 #define B2D_EXT_INIT_CODE \
-	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.11.1.0 Author: Oldes Date: 1-Jun-2024/12:16:17 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
+	"REBOL [Title: \"Rebol Blend2D Extension\" Name: blend2d Type: module Exports: [draw] Version: 0.11.5.0 Author: Oldes Date: 27-Nov-2024/16:19:42 License: Apache-2.0 Url: https://github.com/Siskin-framework/Rebol-Blend2D]\n"\
 	"init-words: command [cmd-words [block!] arg-words [block!]]\n"\
 	"draw: command [\"Draws scalable vector graphics to an image\" image [image! pair!] commands [block!]]\n"\
 	"path: command [\"Prepares path object\" commands [block!]]\n"\
 	"font: command [\"Prepares font handle\" file [file! string!] \"Font location or name\"]\n"\
 	"image: command [\"Prepares Blend2D's native image\" from [pair! image! file!]]\n"\
 	"info: command [\"Returns info about Blend2D library\" /of handle [handle!] \"Blend2D object\"]\n"\
+	"set-threads: command [\"Sets number of threads to be used\" count [integer!] {0 means synchronous rendering; 1 is for async on main thread only else thread pool is used}]\n"\
 	"init-words words: [move line curve curv cubic quad hline vline qcurve qcurv polygon shape box circle ellipse arc image text fill-all clear clear-all point point-size triangle pen fill line-width line-cap line-join alpha blend composite reset-matrix rotate scale translate close clip font fill-pen] [pad tile flip tile-y flip-y tile-x tile-x-flip-y flip-x flip-x-tile-y linear radial conical source-over source-copy source-in source-out source-atop destination-over destination-copy destination-in destination-out destination-atop xor clear plus minus modulate multiply screen overlay darken lighten color-dodge color-burn linear-burn linear-light pin-light hard-light soft-light difference exclusion miter bevel round pie closed chord sweep large]\n"\
 	"protect/hide 'init-words\n"

@@ -10,6 +10,8 @@ system/modules/blend2d: none ;; make sure that we use the local one
 b2d: import 'blend2d
 
 print b2d/info
+
+b2d/set-threads 1 ;; use asynchronous rendering
 ;about
 
 ;recycle/torture

@@ -1,7 +1,13 @@
+//   ____  __   __        ______        __
+//  / __ \/ /__/ /__ ___ /_  __/__ ____/ /
+// / /_/ / / _  / -_|_-<_ / / / -_) __/ _ \
+// \____/_/\_,_/\__/___(@)_/  \__/\__/_// /
+//  ~~~ oldes.huhuman at gmail.com ~~~ /_/
 //
-// Blend2D experimental Rebol extension
-// ====================================
-// Use on your own risc!
+// SPDX-License-Identifier: Apache-2.0
+// =============================================================================
+// Rebol/Blend2D extension commands
+// =============================================================================
 
 #include "blend2d-rebol-extension.h"
 //#include "stdio.h"
@@ -20,6 +26,7 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 	BLFontFaceCore* font_face_ext = NULL;
 
 	BLContextCore ctx;
+	BLContextCreateInfo cci;
 	REBXYF size;
 	REBINT w, h;
 	REBSER *reb_img = 0;
@@ -66,7 +73,10 @@ int cmd_draw(RXIFRM *frm, void *reb_ctx) {
 		return RXR_ERROR;
 	}
 
-	r = blContextInitAs(&ctx, &img_target, NULL);
+	memset(&cci, 0, sizeof(cci));
+	cci.threadCount = threadCount;
+
+	r = blContextInitAs(&ctx, &img_target, &cci);
 	if (r != BL_SUCCESS) {
 		blImageReset(&img_target);
 		RXA_SERIES(frm,1) = "Blend2D failed to initialize a context!";
