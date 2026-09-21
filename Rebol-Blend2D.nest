@@ -1,10 +1,10 @@
 ;-    .-.                                                                       
-;-   /'v'\   SISKIN-Builder 3.9.0 project file                                  
+;-   /'v'\   SISKIN-Builder 3.25.0 project file                                 
 ;-  (/uOu\)  https://github.com/Siskin-framework/Builder/                       
 ;-===="="=======================================================================
 
-github: @asmjit
-github: @blend2d
+github: @asmjit  /b2d_0.12.0
+github: @blend2d /v0.12.0
 ;github: blend2d/blend2d-samples
 
 version: 0.12.0 ;; clang allows only x.y.z version naming!
