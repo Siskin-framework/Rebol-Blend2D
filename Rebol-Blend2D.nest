@@ -136,21 +136,21 @@ cmake-spec: [
 
 eggs: only [
 	"Cmake static Blend2D - x86" [
-		name: %cmake-b2d-x86
+		name: %cmake-blend2d-x86
 		:target-x86 :cmake-spec
 		cmd "cmake --fresh -B $SISKIN_TEMP/blend2d-x86 -S blend2d/ $CMAKE_COMMON"
 		cmd "cmake --build    $SISKIN_TEMP/blend2d-x86 --config release -j 8"
 		cmd "cmake --install  $SISKIN_TEMP/blend2d-x86 --prefix $SISKIN_INSTALL/x86"
 	]
 	"Cmake static Blend2D - x64" [
-		name: %cmake-b2d-x64
+		name: %cmake-blend2d-x64
 		:target-x64 :cmake-spec
 		cmd "cmake --fresh -B $SISKIN_TEMP/blend2d-x64 -S blend2d/ $CMAKE_COMMON"
 		cmd "cmake --build    $SISKIN_TEMP/blend2d-x64 --config release -j 8"
 		cmd "cmake --install  $SISKIN_TEMP/blend2d-x64 --prefix $SISKIN_INSTALL/x64"
 	]
 	"Cmake static Blend2D - arm64" [
-		name: %cmake-b2d-arm64
+		name: %cmake-blend2d-arm64
 		:target-arm64 :cmake-spec
 		cmd "cmake --fresh -B $SISKIN_TEMP/blend2d-arm64 -S blend2d/ $CMAKE_COMMON"
 		cmd "cmake --build    $SISKIN_TEMP/blend2d-arm64 --config release -j 8"
