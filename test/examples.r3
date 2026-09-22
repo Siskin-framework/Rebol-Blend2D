@@ -659,7 +659,7 @@ total-time: 0:0:0
 foreach [file code] examples [
 	out: rejoin [%assets/gen/ file %.png]
 	print [as-red "Drawing example:" as-green mold out]
-	try/except [
+	try/with [
 		code-init: none
 		if parse raw-src compose/deep [
 			thru (join mold file " [") copy code-draw to "^/^-]"

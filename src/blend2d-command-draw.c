@@ -43,6 +43,7 @@ REBSER* b2d_target_image(RXIFRM *frm, REBINT *width, REBINT *height) {
 	RXA_ARG(frm, 1).image  = reb_img;
 	RXA_ARG(frm, 1).width  = w;
 	RXA_ARG(frm, 1).height = h;
+	RXA_ARG(frm, 1).image_index = 0;
 
 	*width  = w;
 	*height = h;
