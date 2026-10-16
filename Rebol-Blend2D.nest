@@ -25,12 +25,13 @@ needs:    cmake
 ]
 
 target-x86: [
+	;- On linux needs:  sudo apt install gcc-multilib g++-multilib
 	arch: x86
 	#if Windows? [ defines: [ TO_WIN32 _WIN32 ] ]
 	#if Linux?   [ defines: [ TO_LINUX_X86    ] ]
 	#if Windows? [ set CMAKE_ARCH: "-A Win32" ]
-	#if Posix?   [ set CMAKE_ARCH: "" ]
-	#if macOS?   [ set CMAKE_ARCH: "" ]
+	#if Posix?   [ set CMAKE_ARCH: "-DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32" ]
+	#if macOS?   [ fail "It is not possible to make 32bit build on macos" ]
 	include: %$SISKIN_INSTALL/x86/include/
 ]
 target-x64: [
@@ -44,7 +45,13 @@ target-x64: [
 	#if macOS?   [ defines: [ TO_OSX_X64          ] flags: ["-arch x86_64"] ]
 	#if Windows? [ set CMAKE_ARCH: "-A x64" ]
 	#if Posix?   [ set CMAKE_ARCH: ""]
-	#if macOS?   [ set CMAKE_ARCH: "-DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9" ]
+	#if macOS?   [
+		set CMAKE_ARCH: [
+			"-DCMAKE_OSX_SYSROOT=macosx"
+			"-DCMAKE_OSX_ARCHITECTURES=x86_64"
+			"-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+		]
+	]
 	include: %$SISKIN_INSTALL/x64/include/
 ]
 
@@ -57,8 +64,23 @@ target-arm64: [
 	define: __arm64__
 	define: TO_OSX_X64
 	#if Windows? [ set CMAKE_ARCH: "-A arm64" ]
-	#if Posix?   [ set CMAKE_ARCH: ""]
-	#if macOS?   [ set CMAKE_ARCH: "-DCMAKE_OSX_SYSROOT=macosx -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0" ]
+	#if Posix?   [
+		#either macOS? [
+			set CMAKE_ARCH: [
+				"-DCMAKE_OSX_SYSROOT=macosx"
+				"-DCMAKE_OSX_ARCHITECTURES=arm64"
+				"-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0"
+			]
+		][
+			;- Needs:  sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+			set CMAKE_ARCH: [
+				"-DCMAKE_SYSTEM_NAME=Linux"
+				"-DCMAKE_SYSTEM_PROCESSOR=aarch64"
+				"-DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc"
+				"-DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++"
+			]
+		]
+	]
 	include: %$SISKIN_INSTALL/arm64/include/
 ]
 
@@ -155,6 +177,20 @@ eggs: only [
 		cmd "cmake --fresh -B $SISKIN_TEMP/blend2d-arm64 -S blend2d/ $CMAKE_COMMON"
 		cmd "cmake --build    $SISKIN_TEMP/blend2d-arm64 --config release -j 8"
 		cmd "cmake --install  $SISKIN_TEMP/blend2d-arm64 --prefix $SISKIN_INSTALL/arm64"
+	]
+	"WASM static Blend2D" [
+		name: %wasm-blend2d
+		set-env WASM_OPTIONS: [
+			"-DCMAKE_BUILD_TYPE=Release"
+			"-DBLEND2D_STATIC=ON"
+			"-DBLEND2D_NO_JIT=ON"
+			"-DBLEND2D_NO_FUTEX=ON"
+			"-DBLEND2D_TEST=OFF"
+			"-DBLEND2D_DEMOS=OFF"
+		]
+		cmd "emcmake cmake --fresh -B $SISKIN_TEMP/blend2d-wasm -S blend2d/ $WASM_OPTIONS"
+		cmd "cmake --build    $SISKIN_TEMP/blend2d-wasm --config release -j 8"
+		cmd "cmake --install  $SISKIN_TEMP/blend2d-wasm --prefix $SISKIN_INSTALL/wasm"
 	]
 
 	#if Windows? [
