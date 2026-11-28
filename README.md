@@ -34,6 +34,16 @@ ARGUMENTS:
 The dialect is similar but not exactly same like the [original Rebol2 implementation](http://www.rebol.com/r3/docs/view/draw.html) or [Red language draw](https://github.com/red/docs/blob/master/en/draw.adoc).
 Not all commands are implemented... it was more considered as a proof of concept.
 
+Blend2D draws with premultiplied pixels, and an `image!` used as a blit source or a pattern is
+passed to it as it is, so an image which came from a file must be converted first with
+`premultiply`. It only matters for images which carry transparency - where every pixel is
+opaque, premultiplying changes nothing (the colour is multiplied by 255/255).
+
+```rebol
+logo: premultiply load %logo.png
+draw 480x480 [image :logo 0x0]
+```
+
 **For some code examples, visit [test/README.md](test/README.md).**
 
 ## Image codecs
@@ -81,7 +91,9 @@ Two things to know:
 * **Partial alpha does not survive a round trip exactly.** Blend2D's encoders take premultiplied
   pixels while a Rebol `image!` keeps straight alpha. A fully opaque image is handed over as it
   is, so nothing is lost (and the file is smaller); an image with translucent pixels is
-  premultiplied on the way in and undone on the way out, which rounds twice.
+  premultiplied on the way in and undone on the way out, which rounds twice. A decoded image
+  carries straight alpha, so it is the one to pass through `premultiply` before drawing with it
+  (see above).
 
 The module is loaded on demand, so the codecs appear once something imports it - on a host
 without its own PNG codec, `load %photo.png` needs `import 'blend2d` first.
