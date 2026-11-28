@@ -263,102 +263,102 @@ examples: [
 
 	%image-blend-1 [
 		clear-all
-		scale 0.5
 		translate 30x30
+		scale 0.5
 		blend 'source-copy      image :fish  0x0
 		blend 'source-over      image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'source-copy      image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'source-in        image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'source-out       image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'source-atop      image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'destination-over image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'destination-in   image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'destination-out  image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'destination-atop image :gnome 0x0
 	]
 
 	%image-blend-2 [
 		clear-all
-		scale 0.5
 		translate 30x30
+		scale 0.5
 		blend 'source-copy      image :fish  0x0
 		blend 'xor              image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
-		blend 'plus            image :gnome 0x0
-		translate 140x0
+		blend 'plus             image :gnome 0x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
-		blend 'minus             image :gnome 0x0
+		blend 'minus            image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'modulate         image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'multiply         image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'screen           image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'overlay          image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'darken           image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'lighten          image :gnome 0x0
 	]
 
 	%image-blend-3 [
 		clear-all
-		scale 0.5
 		translate 30x30
+		scale 0.5
 		blend 'source-copy      image :fish  0x0
 		blend 'color-dodge      image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'color-burn       image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'linear-burn      image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'linear-light     image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'pin-light        image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'hard-light       image :gnome 0x0
 
-		translate -280x140
+		translate -560x280
 		blend 'source-copy      image :fish  0x0
 		blend 'soft-light       image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'difference       image :gnome 0x0
-		translate 140x0
+		translate 280x0
 		blend 'source-copy      image :fish  0x0
 		blend 'exclusion        image :gnome 0x0
 	]

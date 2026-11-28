@@ -693,9 +693,12 @@ COMMAND cmd_blend2d_draw(RXIFRM *frm, void *reb_ctx) {
 		}
 
 
+		// The transforms work in the current coordinates (like in SVG, Canvas
+		// or the AGG extension), so a block keeps its shape under any transform
+		// set before it. NOTE: they used to be the POST_* ops - in device pixels.
 		case W_BLEND2D_CMD_SCALE:
 			RESOLVE_NUMBER_OR_PAIR_ARG(0, 0);
-			bl_context_apply_transform_op(&ctx, BL_TRANSFORM_OP_POST_SCALE, doubles);
+			bl_context_apply_transform_op(&ctx, BL_TRANSFORM_OP_SCALE, doubles);
 			break;
 
 
@@ -703,13 +706,13 @@ COMMAND cmd_blend2d_draw(RXIFRM *frm, void *reb_ctx) {
 			RESOLVE_NUMBER_ARG(0, 0);
 			TO_RADIANS(doubles[0]);
 			RESOLVE_PAIR_ARG_OPTIONAL(1, 1);
-			bl_context_apply_transform_op(&ctx, type ? BL_TRANSFORM_OP_POST_ROTATE_PT : BL_TRANSFORM_OP_POST_ROTATE, doubles);
+			bl_context_apply_transform_op(&ctx, type ? BL_TRANSFORM_OP_ROTATE_PT : BL_TRANSFORM_OP_ROTATE, doubles);
 			break;
 
 
 		case W_BLEND2D_CMD_TRANSLATE:
 			RESOLVE_PAIR_ARG(0, 0);
-			bl_context_apply_transform_op(&ctx, BL_TRANSFORM_OP_POST_TRANSLATE, doubles);
+			bl_context_apply_transform_op(&ctx, BL_TRANSFORM_OP_TRANSLATE, doubles);
 			break;
 
 

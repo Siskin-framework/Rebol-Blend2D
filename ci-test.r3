@@ -512,6 +512,24 @@ group "draw: clipping, clearing and the matrix"
 		image? draw 8x8 [rotate 45 4x4 fill 255.0.0 box 0x0 2x2]
 	]
 ]
+;; NOTE: the transforms used to be applied after the current matrix - in
+;; device pixels - so a block drawn under a scale fell apart.
+;; Each transform works in the current coordinates - the ones the following
+;; commands are drawn in - like in SVG, Canvas or PostScript. So a block keeps
+;; its shape under any transform set before it.
+--test-- "translate after scale is in the scaled units" [
+	d: draw 16x16 [clear-all scale 2 translate 4x0 pen off fill 255.0.0 box 0x0 2x2]
+	all [(px d 9 1) == 255.0.0  0 == pa d 5 1]
+]
+--test-- "scale after translate keeps the translation" [
+	d: draw 16x16 [clear-all translate 4x0 scale 2 pen off fill 255.0.0 box 0x0 2x2]
+	all [(px d 5 1) == 255.0.0  (px d 7 3) == 255.0.0  0 == pa d 9 1]
+]
+--test-- "a rotate pivot is in the current coordinates" [
+	;; 0x0..2x2 turned around (2, 2) is 2x2..4x4, scaled to 4x4..8x8
+	d: draw 16x16 [clear-all scale 2 rotate 180 2x2 pen off fill 255.0.0 box 0x0 2x2]
+	all [(px d 6 6) == 255.0.0  0 == pa d 1 1]
+]
 
 ;;=============================================================================
 group "draw: images"
